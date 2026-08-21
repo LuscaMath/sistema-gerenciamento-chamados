@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Ticket;
 use App\Enums\TicketStatus;
 use App\Models\User;
+use App\Exceptions\BusinessException;
 use Illuminate\Database\Eloquent\Collection;
 
 class TicketService
@@ -40,6 +41,28 @@ class TicketService
     public function getById(Ticket $ticket): Ticket
     {
         return $ticket->load([
+            'requester',
+            'technician',
+            'category',
+        ]);
+    }
+
+    public function assign(Ticket $ticket, User $technician): Ticket
+    {
+        if ($ticket->technician_id !== null) {
+            throw new BusinessException('O chamado já possui um técnico responsável.');
+        }
+
+        if ($ticket->status !== TicketStatus::OPEN) {
+            throw new BusinessException('Somente chamados abertos podem ser assumidos.');
+        }
+
+        $ticket->update([
+            'technician_id' => $technician->id,
+            'status' => TicketStatus::IN_PROGRESS,
+        ]);
+
+        return $ticket->refresh()->load([
             'requester',
             'technician',
             'category',

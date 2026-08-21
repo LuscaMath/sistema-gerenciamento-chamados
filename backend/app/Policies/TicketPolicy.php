@@ -42,6 +42,15 @@ class TicketPolicy
     }
 
     /**
+     * Determine whether the user can assign a ticket.
+     */
+
+    public function assign(User $user, Ticket $ticket): bool
+    {
+        return $user->role === UserRole::TECHNICIAN;
+    }
+
+    /**
      * Determine whether the user can update the model.
      */
     public function update(User $user, Ticket $ticket): bool

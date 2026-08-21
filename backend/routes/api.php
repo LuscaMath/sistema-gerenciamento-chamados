@@ -29,5 +29,10 @@ Route::prefix('v1')->group(function () {
 
         Route::apiResource('tickets', TicketController::class)
             ->only(['index', 'store', 'show']);
+        
+        Route::patch(
+            'tickets/{ticket}/assign',
+            [TicketController::class, 'assign']
+        );
     });
 });

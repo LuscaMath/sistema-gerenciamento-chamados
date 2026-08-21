@@ -46,4 +46,16 @@ class TicketController extends Controller
 
         return new TicketResource($ticket);
     }
+
+    public function assign(Ticket $ticket): TicketResource
+    {
+        $this->authorize('assign', $ticket);
+
+        $ticket = $this->service->assign(
+            $ticket,
+            request()->user()
+        );
+
+        return new TicketResource($ticket);
+    }
 }
