@@ -68,4 +68,25 @@ class TicketService
             'category',
         ]);
     }
+
+    public function resolve(Ticket $ticket, array $data): Ticket
+    {
+        if ($ticket->status !== TicketStatus::IN_PROGRESS) {
+            throw new BusinessException(
+                'Somente chamados em atendimento podem ser resolvidos.'
+            );
+        }
+
+        $ticket->update([
+            'solution' => $data['solution'],
+            'status' => TicketStatus::RESOLVED,
+            'resolved_at' => now(),
+        ]);
+
+        return $ticket->refresh()->load([
+            'requester',
+            'technician',
+            'category',
+        ]);
+    }
 }

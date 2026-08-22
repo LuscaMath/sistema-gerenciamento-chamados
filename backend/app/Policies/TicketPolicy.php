@@ -51,6 +51,15 @@ class TicketPolicy
     }
 
     /**
+     * Determine whether the user can resolve a ticket.
+     */
+
+    public function resolve(User $user, Ticket $ticket): bool
+    {
+        return $user->role === UserRole::TECHNICIAN && $ticket->technician_id === $user->id; 
+    }
+
+    /**
      * Determine whether the user can update the model.
      */
     public function update(User $user, Ticket $ticket): bool

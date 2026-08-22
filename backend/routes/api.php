@@ -34,5 +34,10 @@ Route::prefix('v1')->group(function () {
             'tickets/{ticket}/assign',
             [TicketController::class, 'assign']
         );
+
+        Route::patch(
+            'tickets/{ticket}/resolve',
+            [TicketController::class, 'resolve']
+        );
     });
 });
