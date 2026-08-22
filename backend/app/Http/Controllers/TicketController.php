@@ -70,4 +70,13 @@ class TicketController extends Controller
 
         return new TicketResource($ticket);
     }
+
+    public function close(Ticket $ticket): TicketResource
+    {
+        $this->authorize('close', $ticket);
+
+        $ticket = $this->service->close($ticket);
+
+        return new TicketResource($ticket);
+    }
 }

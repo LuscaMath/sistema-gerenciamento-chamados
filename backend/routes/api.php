@@ -15,13 +15,13 @@ Route::prefix('v1')->group(function () {
         Route::post('/logout', [AuthController::class, 'logout']);
 
         Route::apiResource('categories', CategoryController::class)
-            ->except('destroy');    
+            ->except('destroy');
 
         Route::patch(
             'categories/{category}/deactivate',
             [CategoryController::class, 'deactivate']
         );
-        
+
         Route::patch(
             'categories/{category}/activate',
             [CategoryController::class, 'activate']
@@ -29,7 +29,7 @@ Route::prefix('v1')->group(function () {
 
         Route::apiResource('tickets', TicketController::class)
             ->only(['index', 'store', 'show']);
-        
+
         Route::patch(
             'tickets/{ticket}/assign',
             [TicketController::class, 'assign']
@@ -38,6 +38,11 @@ Route::prefix('v1')->group(function () {
         Route::patch(
             'tickets/{ticket}/resolve',
             [TicketController::class, 'resolve']
+        );
+
+        Route::patch(
+            'tickets/{ticket}/close',
+            [TicketController::class, 'close']
         );
     });
 });

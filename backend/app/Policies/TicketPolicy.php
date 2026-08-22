@@ -56,7 +56,15 @@ class TicketPolicy
 
     public function resolve(User $user, Ticket $ticket): bool
     {
-        return $user->role === UserRole::TECHNICIAN && $ticket->technician_id === $user->id; 
+        return $user->role === UserRole::TECHNICIAN && $ticket->technician_id === $user->id;
+    }
+
+    /**
+     * Determine whether the user can close a ticket.
+     */
+    public function close(User $user, Ticket $ticket): bool
+    {
+        return $user->role === UserRole::REQUESTER && $ticket->requester_id === $user->id;
     }
 
     /**

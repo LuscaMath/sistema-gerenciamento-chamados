@@ -89,4 +89,24 @@ class TicketService
             'category',
         ]);
     }
+
+    public function close(Ticket $ticket): Ticket
+    {
+        if ($ticket->status !== TicketStatus::RESOLVED) {
+            throw new BusinessException(
+                'Somente chamados resolvidos podem ser fechados.'
+            );
+        }
+
+        $ticket->update([
+            'status' => TicketStatus::CLOSED,
+            'closed_at' => now(),
+        ]);
+
+        return $ticket->refresh()->load([
+            'requester',
+            'technician',
+            'category',
+        ]);
+    }
 }
