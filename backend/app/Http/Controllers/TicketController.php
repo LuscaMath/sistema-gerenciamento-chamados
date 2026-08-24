@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreTicketRequest;
 use App\Http\Resources\TicketResource;
 use App\Http\Requests\ResolveTicketRequest;
+use Illuminate\Http\Request;
 use App\Models\Ticket;
 use App\Services\TicketService;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -15,12 +16,17 @@ class TicketController extends Controller
         private readonly TicketService $service
     ) {}
 
-    public function index(): AnonymousResourceCollection
+    public function index(Request $request): AnonymousResourceCollection
     {
         $this->authorize('viewAny', Ticket::class);
 
         $tickets = $this->service->getAllFor(
-            request()->user()
+            $request->user(),
+            $request->only([
+                'status',
+                'priority',
+                'category_id',
+            ])
         );
 
         return TicketResource::collection($tickets);

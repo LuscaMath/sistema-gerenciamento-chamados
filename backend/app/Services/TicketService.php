@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Ticket;
 use App\Enums\TicketStatus;
+use App\Enums\UserRole;
 use App\Models\User;
 use App\Exceptions\BusinessException;
 use Illuminate\Database\Eloquent\Collection;
@@ -25,14 +26,26 @@ class TicketService
         ]);
     }
 
-    public function getAllFor(User $user): Collection
+    public function getAllFor(User $user, array $filters = []): Collection
     {
         $query = Ticket::query()
             ->with(['requester', 'technician', 'category'])
             ->latest();
 
-        if ($user->role === \App\Enums\UserRole::REQUESTER) {
+        if ($user->role === UserRole::REQUESTER) {
             $query->where('requester_id', $user->id);
+        }
+
+        if (!empty($filters['status'])) {
+            $query->where('status', $filters['status']);
+        }
+
+        if (!empty($filters['priority'])) {
+            $query->where('priority', $filters['priority']);
+        }
+
+        if (!empty($filters['category_id'])) {
+            $query->where('category_id', $filters['category_id']);
         }
 
         return $query->get();

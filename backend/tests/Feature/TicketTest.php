@@ -207,3 +207,132 @@ it('allows requester to close a resolved ticket', function () {
         'status' => 'closed',
     ]);
 });
+
+it('filters tickets by status', function () {
+    $admin = User::factory()->create([
+        'role' => UserRole::ADMIN,
+    ]);
+
+    $category = Category::create([
+        'name' => 'Hardware',
+    ]);
+
+    Ticket::create([
+        'requester_id' => User::factory()->create([
+            'role' => UserRole::REQUESTER,
+        ])->id,
+        'category_id' => $category->id,
+        'title' => 'Chamado aberto',
+        'description' => 'Teste',
+        'priority' => 'medium',
+        'status' => 'open',
+    ]);
+
+    Ticket::create([
+        'requester_id' => User::factory()->create([
+            'role' => UserRole::REQUESTER,
+        ])->id,
+        'category_id' => $category->id,
+        'title' => 'Chamado resolvido',
+        'description' => 'Teste',
+        'priority' => 'medium',
+        'status' => 'resolved',
+    ]);
+
+    Sanctum::actingAs($admin);
+
+    $response = $this->getJson('/api/v1/tickets?status=open');
+
+    $response
+        ->assertOk()
+        ->assertJsonCount(1, 'data')
+        ->assertJsonPath('data.0.title', 'Chamado aberto');
+});
+
+it('filters tickets by priority', function () {
+    $admin = User::factory()->create([
+        'role' => UserRole::ADMIN,
+    ]);
+
+    $requester = User::factory()->create([
+        'role' => UserRole::REQUESTER,
+    ]);
+
+    $category = Category::create([
+        'name' => 'Hardware',
+    ]);
+
+    Ticket::create([
+        'requester_id' => $requester->id,
+        'category_id' => $category->id,
+        'title' => 'Alta prioridade',
+        'description' => 'Teste',
+        'priority' => 'high',
+        'status' => 'open',
+    ]);
+
+    Ticket::create([
+        'requester_id' => $requester->id,
+        'category_id' => $category->id,
+        'title' => 'Baixa prioridade',
+        'description' => 'Teste',
+        'priority' => 'low',
+        'status' => 'open',
+    ]);
+
+    Sanctum::actingAs($admin);
+
+    $response = $this->getJson('/api/v1/tickets?priority=high');
+
+    $response
+        ->assertOk()
+        ->assertJsonCount(1, 'data')
+        ->assertJsonPath('data.0.title', 'Alta prioridade');
+});
+
+it('filters tickets by multiple filters', function () {
+    $admin = User::factory()->create([
+        'role' => UserRole::ADMIN,
+    ]);
+
+    $requester = User::factory()->create([
+        'role' => UserRole::REQUESTER,
+    ]);
+
+    $hardware = Category::create([
+        'name' => 'Hardware',
+    ]);
+
+    $software = Category::create([
+        'name' => 'Software',
+    ]);
+
+    Ticket::create([
+        'requester_id' => $requester->id,
+        'category_id' => $hardware->id,
+        'title' => 'Chamado correto',
+        'description' => 'Teste',
+        'priority' => 'high',
+        'status' => 'open',
+    ]);
+
+    Ticket::create([
+        'requester_id' => $requester->id,
+        'category_id' => $software->id,
+        'title' => 'Outro chamado',
+        'description' => 'Teste',
+        'priority' => 'high',
+        'status' => 'open',
+    ]);
+
+    Sanctum::actingAs($admin);
+
+    $response = $this->getJson(
+        "/api/v1/tickets?status=open&priority=high&category_id={$hardware->id}"
+    );
+
+    $response
+        ->assertOk()
+        ->assertJsonCount(1, 'data')
+        ->assertJsonPath('data.0.title', 'Chamado correto');
+});
