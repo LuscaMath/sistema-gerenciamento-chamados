@@ -5,7 +5,7 @@ namespace App\Policies;
 use App\Models\Ticket;
 use App\Models\User;
 use App\Enums\UserRole;
-use Illuminate\Auth\Access\Response;
+use App\Enums\TicketStatus;
 
 class TicketPolicy
 {
@@ -65,6 +65,28 @@ class TicketPolicy
     public function close(User $user, Ticket $ticket): bool
     {
         return $user->role === UserRole::REQUESTER && $ticket->requester_id === $user->id;
+    }
+
+    /**
+     * Determine whether the user can comment the model.
+     */
+
+    public function comment(User $user, Ticket $ticket): bool
+    {
+        if ($ticket->status === TicketStatus::CLOSED) {
+            return false;
+        }
+
+        if ($user->role === UserRole::ADMIN) {
+            return true;
+        }
+
+        if ($user->role === UserRole::TECHNICIAN) {
+            return true;
+        }
+
+        return $user->role === UserRole::REQUESTER
+            && $ticket->requester_id === $user->id;
     }
 
     /**
