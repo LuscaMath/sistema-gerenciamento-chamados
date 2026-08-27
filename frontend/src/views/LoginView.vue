@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useAuthStore } from '@/stores/auth'
+import { useRouter } from 'vue-router'
 
 const auth = useAuthStore()
+const router = useRouter()
 
 const email = ref('')
 const password = ref('')
@@ -17,7 +19,7 @@ async function handleLogin() {
       password: password.value,
     })
 
-    console.log('Usuário autenticado:', auth.user)
+    await router.push('/')
   } catch {
     error.value = 'Não foi possível realizar o login.'
   }
@@ -29,20 +31,12 @@ async function handleLogin() {
     <form @submit.prevent="handleLogin">
       <div>
         <label for="email">E-mail</label>
-        <input
-          id="email"
-          v-model="email"
-          type="email"
-        />
+        <input id="email" v-model="email" type="email" />
       </div>
 
       <div>
         <label for="password">Senha</label>
-        <input
-          id="password"
-          v-model="password"
-          type="password"
-        />
+        <input id="password" v-model="password" type="password" />
       </div>
 
       <p v-if="error">
