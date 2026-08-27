@@ -34,6 +34,19 @@ const router = createRouter({
           name: 'categories',
           component: () => import('@/views/CategoriesView.vue'),
         },
+        {
+          path: 'tickets/create',
+          name: 'ticket-create',
+          component: () => import('@/views/CreateTicketView.vue'),
+          meta: {
+            role: 'requester',
+          },
+        },
+        {
+          path: 'tickets/:id',
+          name: 'ticket-details',
+          component: () => import('@/views/TicketDetailsView.vue'),
+        },
       ],
     },
   ],
@@ -49,6 +62,12 @@ router.beforeEach((to) => {
   }
 
   if (to.name === 'login' && auth.isAuthenticated) {
+    return {
+      name: 'home',
+    }
+  }
+
+  if (to.meta.role && auth.user?.role !== to.meta.role) {
     return {
       name: 'home',
     }
