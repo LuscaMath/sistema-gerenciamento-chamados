@@ -18,9 +18,5 @@ async function handleLogout() {
     <p v-if="auth.user">
       Olá, {{ auth.user.name }}
     </p>
-
-    <button @click="handleLogout">
-      Sair
-    </button>
   </main>
 </template>

@@ -11,13 +11,30 @@ const router = createRouter({
       name: 'login',
       component: LoginView,
     },
+
     {
       path: '/',
-      name: 'home',
-      component: () => import('@/views/HomeView.vue'),
+      component: () => import('@/layouts/AppLayout.vue'),
       meta: {
         requiresAuth: true,
       },
+      children: [
+        {
+          path: '',
+          name: 'home',
+          component: () => import('@/views/HomeView.vue'),
+        },
+        {
+          path: 'tickets',
+          name: 'tickets',
+          component: () => import('@/views/TicketsView.vue'),
+        },
+        {
+          path: 'categories',
+          name: 'categories',
+          component: () => import('@/views/CategoriesView.vue'),
+        },
+      ],
     },
   ],
 })
