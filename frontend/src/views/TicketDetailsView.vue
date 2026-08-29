@@ -1,12 +1,17 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
-import { getTicket } from '@/api/tickets'
+import {
+    assignTechnician,
+    assignTicket,
+    closeTicket,
+    getTechnicians,
+    getTicket,
+    resolveTicket,
+} from '@/api/tickets'
 import { useAuthStore } from '@/stores/auth'
-import { assignTicket } from '@/api/tickets'
-import { resolveTicket } from '@/api/tickets'
-import { closeTicket } from '@/api/tickets'
 import type { Ticket } from '@/types/ticket'
+import type { Technician } from '@/types/technician'
 import { getTicketComments, createTicketComment } from '@/api/ticket-comments'
 import type { TicketComment } from '@/types/ticket-comment'
 
@@ -22,6 +27,8 @@ const error = ref('')
 const comments = ref<TicketComment[]>([])
 const commentContent = ref('')
 const commentLoading = ref(false)
+const technicians = ref<Technician[]>([])
+const selectedTechnicianId = ref<number | null>(null)
 
 async function loadTicket() {
     try {
@@ -49,6 +56,35 @@ async function handleAssign() {
         ticket.value = response.data.data
     } catch {
         actionError.value = 'Não foi possível assumir o chamado.'
+    } finally {
+        actionLoading.value = false
+    }
+}
+
+async function loadTechnicians() {
+    try {
+        const response = await getTechnicians()
+        technicians.value = response.data.data
+    } catch {
+        actionError.value = 'Não foi possível carregar os técnicos disponíveis.'
+    }
+}
+
+async function handleAdminAssign() {
+    if (!ticket.value || !selectedTechnicianId.value) return
+
+    actionLoading.value = true
+    actionError.value = ''
+
+    try {
+        const response = await assignTechnician(ticket.value.id, {
+            technician_id: selectedTechnicianId.value,
+        })
+
+        ticket.value = response.data.data
+        selectedTechnicianId.value = null
+    } catch {
+        actionError.value = 'Não foi possível atribuir o técnico ao chamado.'
     } finally {
         actionLoading.value = false
     }
@@ -118,7 +154,13 @@ async function handleComment() {
     }
 }
 
-onMounted(loadTicket)
+onMounted(async () => {
+    await loadTicket()
+
+    if (auth.user?.role === 'admin' && ticket.value?.status === 'open') {
+        await loadTechnicians()
+    }
+})
 </script>
 
 <template>
@@ -174,6 +216,24 @@ onMounted(loadTicket)
             " :disabled="actionLoading" @click="handleAssign">
                 {{ actionLoading ? 'Assumindo...' : 'Assumir chamado' }}
             </button>
+            <div v-if="auth.user?.role === 'admin' && ticket.status === 'open'">
+                <label for="technician">Técnico responsável</label>
+
+                <select id="technician" v-model="selectedTechnicianId">
+                    <option :value="null" disabled>Selecione um técnico</option>
+
+                    <option v-for="technician in technicians" :key="technician.id" :value="technician.id">
+                        {{ technician.name }}
+                    </option>
+                </select>
+
+                <button
+                    :disabled="actionLoading || !selectedTechnicianId"
+                    @click="handleAdminAssign"
+                >
+                    {{ actionLoading ? 'Atribuindo...' : 'Atribuir técnico' }}
+                </button>
+            </div>
             <button v-if="
                 auth.user?.role === 'requester' &&
                 ticket.status === 'resolved' &&

@@ -2,10 +2,10 @@
 
 namespace App\Policies;
 
+use App\Enums\TicketStatus;
+use App\Enums\UserRole;
 use App\Models\Ticket;
 use App\Models\User;
-use App\Enums\UserRole;
-use App\Enums\TicketStatus;
 
 class TicketPolicy
 {
@@ -44,16 +44,30 @@ class TicketPolicy
     /**
      * Determine whether the user can assign a ticket.
      */
-
     public function assign(User $user, Ticket $ticket): bool
     {
         return $user->role === UserRole::TECHNICIAN;
     }
 
     /**
+     * Determine whether the user can view technicians available for assignment.
+     */
+    public function viewTechnicians(User $user): bool
+    {
+        return $user->role === UserRole::ADMIN;
+    }
+
+    /**
+     * Determine whether the user can assign a technician to a ticket.
+     */
+    public function assignTechnician(User $user, Ticket $ticket): bool
+    {
+        return $user->role === UserRole::ADMIN;
+    }
+
+    /**
      * Determine whether the user can resolve a ticket.
      */
-
     public function resolve(User $user, Ticket $ticket): bool
     {
         return $user->role === UserRole::TECHNICIAN && $ticket->technician_id === $user->id;
@@ -70,7 +84,6 @@ class TicketPolicy
     /**
      * Determine whether the user can comment the model.
      */
-
     public function comment(User $user, Ticket $ticket): bool
     {
         if ($ticket->status === TicketStatus::CLOSED) {

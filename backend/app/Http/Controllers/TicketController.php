@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreTicketRequest;
-use App\Http\Resources\TicketResource;
+use App\Http\Requests\AssignTechnicianRequest;
 use App\Http\Requests\ResolveTicketRequest;
-use Illuminate\Http\Request;
+use App\Http\Requests\StoreTicketRequest;
+use App\Http\Resources\TechnicianResource;
+use App\Http\Resources\TicketResource;
 use App\Models\Ticket;
+use App\Models\User;
 use App\Services\TicketService;
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class TicketController extends Controller
@@ -53,6 +56,15 @@ class TicketController extends Controller
         return new TicketResource($ticket);
     }
 
+    public function technicians(): AnonymousResourceCollection
+    {
+        $this->authorize('viewTechnicians', Ticket::class);
+
+        return TechnicianResource::collection(
+            $this->service->getTechnicians()
+        );
+    }
+
     public function assign(Ticket $ticket): TicketResource
     {
         $this->authorize('assign', $ticket);
@@ -61,6 +73,19 @@ class TicketController extends Controller
             $ticket,
             request()->user()
         );
+
+        return new TicketResource($ticket);
+    }
+
+    public function assignTechnician(
+        AssignTechnicianRequest $request,
+        Ticket $ticket
+    ): TicketResource {
+        $this->authorize('assignTechnician', $ticket);
+
+        $technician = User::findOrFail($request->integer('technician_id'));
+
+        $ticket = $this->service->assign($ticket, $technician);
 
         return new TicketResource($ticket);
     }

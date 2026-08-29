@@ -31,9 +31,19 @@ Route::prefix('v1')->group(function () {
         Route::apiResource('tickets', TicketController::class)
             ->only(['index', 'store', 'show']);
 
+        Route::get(
+            'technicians',
+            [TicketController::class, 'technicians']
+        );
+
         Route::patch(
             'tickets/{ticket}/assign',
             [TicketController::class, 'assign']
+        );
+
+        Route::patch(
+            'tickets/{ticket}/assign-technician',
+            [TicketController::class, 'assignTechnician']
         );
 
         Route::patch(

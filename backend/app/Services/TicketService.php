@@ -2,11 +2,11 @@
 
 namespace App\Services;
 
-use App\Models\Ticket;
 use App\Enums\TicketStatus;
 use App\Enums\UserRole;
-use App\Models\User;
 use App\Exceptions\BusinessException;
+use App\Models\Ticket;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
 
 class TicketService
@@ -36,15 +36,15 @@ class TicketService
             $query->where('requester_id', $user->id);
         }
 
-        if (!empty($filters['status'])) {
+        if (! empty($filters['status'])) {
             $query->where('status', $filters['status']);
         }
 
-        if (!empty($filters['priority'])) {
+        if (! empty($filters['priority'])) {
             $query->where('priority', $filters['priority']);
         }
 
-        if (!empty($filters['category_id'])) {
+        if (! empty($filters['category_id'])) {
             $query->where('category_id', $filters['category_id']);
         }
 
@@ -60,8 +60,20 @@ class TicketService
         ]);
     }
 
+    public function getTechnicians(): Collection
+    {
+        return User::query()
+            ->where('role', UserRole::TECHNICIAN)
+            ->orderBy('name')
+            ->get();
+    }
+
     public function assign(Ticket $ticket, User $technician): Ticket
     {
+        if ($technician->role !== UserRole::TECHNICIAN) {
+            throw new BusinessException('O usuário selecionado deve ser um técnico.');
+        }
+
         if ($ticket->technician_id !== null) {
             throw new BusinessException('O chamado já possui um técnico responsável.');
         }

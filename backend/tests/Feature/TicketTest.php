@@ -1,11 +1,11 @@
 <?php
 
 use App\Enums\TicketPriority;
-use App\Enums\UserRole;
 use App\Enums\TicketStatus;
+use App\Enums\UserRole;
 use App\Models\Category;
-use App\Models\User;
 use App\Models\Ticket;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Sanctum\Sanctum;
 
@@ -54,7 +54,7 @@ it('forbids requester from viewing another requester ticket', function () {
         'name' => 'Hardware',
     ]);
 
-    $ticket = \App\Models\Ticket::create([
+    $ticket = Ticket::create([
         'requester_id' => $otherRequester->id,
         'category_id' => $category->id,
         'title' => 'Teste',
@@ -336,3 +336,190 @@ it('filters tickets by multiple filters', function () {
         ->assertJsonCount(1, 'data')
         ->assertJsonPath('data.0.title', 'Chamado correto');
 });
+
+it('allows admin to assign an open ticket to a technician', function () {
+    $admin = User::factory()->create([
+        'role' => UserRole::ADMIN,
+    ]);
+
+    $technician = User::factory()->create([
+        'role' => UserRole::TECHNICIAN,
+    ]);
+
+    $ticket = createOpenTicket();
+
+    Sanctum::actingAs($admin);
+
+    $this->patchJson("/api/v1/tickets/{$ticket->id}/assign-technician", [
+        'technician_id' => $technician->id,
+    ])
+        ->assertOk()
+        ->assertJsonPath('data.technician.id', $technician->id)
+        ->assertJsonPath('data.status', TicketStatus::IN_PROGRESS->value);
+
+    $this->assertDatabaseHas('tickets', [
+        'id' => $ticket->id,
+        'technician_id' => $technician->id,
+        'status' => TicketStatus::IN_PROGRESS->value,
+    ]);
+});
+
+it('forbids non-admin users from assigning a technician manually', function () {
+    $requester = User::factory()->create([
+        'role' => UserRole::REQUESTER,
+    ]);
+
+    $technician = User::factory()->create([
+        'role' => UserRole::TECHNICIAN,
+    ]);
+
+    $ticket = createOpenTicket();
+
+    Sanctum::actingAs($requester);
+
+    $this->patchJson("/api/v1/tickets/{$ticket->id}/assign-technician", [
+        'technician_id' => $technician->id,
+    ])->assertForbidden();
+});
+
+it('requires the manually assigned user to be a technician', function () {
+    $admin = User::factory()->create([
+        'role' => UserRole::ADMIN,
+    ]);
+
+    $requester = User::factory()->create([
+        'role' => UserRole::REQUESTER,
+    ]);
+
+    $ticket = createOpenTicket();
+
+    Sanctum::actingAs($admin);
+
+    $this->patchJson("/api/v1/tickets/{$ticket->id}/assign-technician", [
+        'technician_id' => $requester->id,
+    ])
+        ->assertUnprocessable()
+        ->assertJsonValidationErrors('technician_id');
+});
+
+it('does not allow admin to reassign a ticket that already has a technician', function () {
+    $admin = User::factory()->create([
+        'role' => UserRole::ADMIN,
+    ]);
+
+    $currentTechnician = User::factory()->create([
+        'role' => UserRole::TECHNICIAN,
+    ]);
+
+    $newTechnician = User::factory()->create([
+        'role' => UserRole::TECHNICIAN,
+    ]);
+
+    $ticket = createOpenTicket([
+        'technician_id' => $currentTechnician->id,
+        'status' => TicketStatus::IN_PROGRESS,
+    ]);
+
+    Sanctum::actingAs($admin);
+
+    $this->patchJson("/api/v1/tickets/{$ticket->id}/assign-technician", [
+        'technician_id' => $newTechnician->id,
+    ])->assertUnprocessable();
+});
+
+it('allows manual assignment only for open tickets', function () {
+    $admin = User::factory()->create([
+        'role' => UserRole::ADMIN,
+    ]);
+
+    $technician = User::factory()->create([
+        'role' => UserRole::TECHNICIAN,
+    ]);
+
+    $ticket = createOpenTicket([
+        'status' => TicketStatus::RESOLVED,
+    ]);
+
+    Sanctum::actingAs($admin);
+
+    $this->patchJson("/api/v1/tickets/{$ticket->id}/assign-technician", [
+        'technician_id' => $technician->id,
+    ])->assertUnprocessable();
+});
+
+it('forbids admin from assuming or resolving tickets', function () {
+    $admin = User::factory()->create([
+        'role' => UserRole::ADMIN,
+    ]);
+
+    $technician = User::factory()->create([
+        'role' => UserRole::TECHNICIAN,
+    ]);
+
+    $openTicket = createOpenTicket();
+    $inProgressTicket = createOpenTicket([
+        'technician_id' => $technician->id,
+        'status' => TicketStatus::IN_PROGRESS,
+    ]);
+
+    Sanctum::actingAs($admin);
+
+    $this->patchJson("/api/v1/tickets/{$openTicket->id}/assign")
+        ->assertForbidden();
+
+    $this->patchJson("/api/v1/tickets/{$inProgressTicket->id}/resolve", [
+        'solution' => 'Tentativa administrativa.',
+    ])->assertForbidden();
+});
+
+it('lists only technicians for administrators', function () {
+    $admin = User::factory()->create([
+        'role' => UserRole::ADMIN,
+    ]);
+
+    $technician = User::factory()->create([
+        'role' => UserRole::TECHNICIAN,
+    ]);
+
+    User::factory()->create([
+        'role' => UserRole::REQUESTER,
+    ]);
+
+    Sanctum::actingAs($admin);
+
+    $this->getJson('/api/v1/technicians')
+        ->assertOk()
+        ->assertJsonCount(1, 'data')
+        ->assertJsonPath('data.0.id', $technician->id);
+});
+
+it('forbids non-admin users from listing technicians', function () {
+    $requester = User::factory()->create([
+        'role' => UserRole::REQUESTER,
+    ]);
+
+    Sanctum::actingAs($requester);
+
+    $this->getJson('/api/v1/technicians')->assertForbidden();
+});
+
+function createOpenTicket(array $attributes = []): Ticket
+{
+    $requester = User::factory()->create([
+        'role' => UserRole::REQUESTER,
+    ]);
+
+    $category = Category::create([
+        'name' => fake()->unique()->word(),
+    ]);
+
+    return Ticket::create([
+        'requester_id' => $requester->id,
+        'category_id' => $category->id,
+        'title' => 'Chamado para atribuição',
+        'description' => 'Descrição do chamado.',
+        'priority' => TicketPriority::MEDIUM,
+        'status' => TicketStatus::OPEN,
+        ...$attributes,
+    ]);
+}

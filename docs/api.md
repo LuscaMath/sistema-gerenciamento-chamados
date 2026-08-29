@@ -8,11 +8,35 @@ URL base:
 
 `/api/v1`
 
-Endpoints protegidos exigem autenticação via Laravel Sanctum utilizando Bearer Token.
+O frontend é uma SPA autenticada pelo Laravel Sanctum com cookies de sessão HttpOnly. Antes de realizar login, o navegador deve solicitar `GET /sanctum/csrf-cookie`; as requisições seguintes devem enviar cookies e o token XSRF automaticamente. A API não emite nem exige Bearer Token para esse fluxo.
 
 ---
 
 ## 2. Autenticação
+
+### Inicializar proteção CSRF
+
+GET `/sanctum/csrf-cookie`
+
+Esse endpoint não pertence ao prefixo `/api/v1`. Ele deve ser chamado pelo cliente SPA antes de `login` ou `register`.
+
+### Registrar Solicitante
+
+POST `/api/v1/register`
+
+Corpo:
+
+{
+  "name": "Novo Solicitante",
+  "email": "usuario@email.com",
+  "password": "senha-com-no-minimo-8-caracteres"
+}
+
+Regras:
+
+- O cadastro público cria exclusivamente usuários com perfil `requester`.
+- O campo `role` não é aceito nesse endpoint.
+- Criação de usuários técnicos ou administradores deve ocorrer por um fluxo administrativo autenticado.
 
 ### Realizar Login
 
@@ -102,6 +126,32 @@ Regras:
 - O chamado deve estar com status `open`.
 - O chamado não pode possuir outro técnico responsável.
 - Ao assumir, o status passa para `in_progress`.
+
+### Listar Técnicos Disponíveis
+
+GET `/api/v1/technicians`
+
+Regras:
+
+- Apenas administradores podem consultar a lista.
+- A resposta contém somente usuários com perfil `technician`.
+
+### Atribuir Técnico Manualmente
+
+PATCH `/api/v1/tickets/{id}/assign-technician`
+
+Corpo:
+
+{
+  "technician_id": 2
+}
+
+Regras:
+
+- Apenas administradores podem atribuir um técnico.
+- O usuário selecionado deve possuir o perfil `technician`.
+- O chamado deve estar aberto e não pode possuir técnico responsável.
+- A atribuição altera o status para `in_progress`.
 
 ### Resolver Chamado
 

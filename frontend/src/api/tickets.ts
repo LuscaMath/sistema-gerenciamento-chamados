@@ -1,5 +1,6 @@
 import { api } from '@/api/client'
 import type { Ticket, TicketPriority } from '@/types/ticket'
+import type { Technician } from '@/types/technician'
 
 interface TicketCollectionResponse {
     data: Ticket[]
@@ -20,6 +21,10 @@ export interface ResolveTicketPayload {
     solution: string
 }
 
+export interface AssignTechnicianPayload {
+    technician_id: number
+}
+
 export function getTickets() {
     return api.get<TicketCollectionResponse>('/api/v1/tickets')
 }
@@ -34,6 +39,20 @@ export function getTicket(id: number) {
 
 export function assignTicket(id: number) {
     return api.patch<TicketResponse>(`/api/v1/tickets/${id}/assign`)
+}
+
+export function getTechnicians() {
+    return api.get<{ data: Technician[] }>('/api/v1/technicians')
+}
+
+export function assignTechnician(
+    id: number,
+    payload: AssignTechnicianPayload,
+) {
+    return api.patch<TicketResponse>(
+        `/api/v1/tickets/${id}/assign-technician`,
+        payload,
+    )
 }
 
 export function resolveTicket(id: number, payload: ResolveTicketPayload) {
