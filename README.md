@@ -8,7 +8,7 @@ O projeto utiliza uma arquitetura separada entre **backend e frontend**, onde o 
 
 Atualmente o sistema possui:
 
-* Autenticação via API;
+* Autenticação de SPA via Laravel Sanctum e cookies de sessão HttpOnly;
 * Controle de acesso por perfil de usuário;
 * Gerenciamento de categorias;
 * Abertura e consulta de chamados;
@@ -290,9 +290,15 @@ docs/
 
 ## Frontend
 
-O frontend será desenvolvido separadamente utilizando Vue 3 e TypeScript e consumirá a API REST disponibilizada pelo Laravel.
+O frontend é desenvolvido separadamente com Vue 3 e TypeScript e consome a API REST disponibilizada pelo Laravel. A autenticação utiliza cookies de sessão do Sanctum; não há armazenamento de token no navegador.
 
-As instruções específicas para execução do frontend serão adicionadas conforme seu desenvolvimento.
+Configure `frontend/.env` a partir de `frontend/.env.example`, instale as dependências e inicie a aplicação:
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
 
 ## DevOps
 

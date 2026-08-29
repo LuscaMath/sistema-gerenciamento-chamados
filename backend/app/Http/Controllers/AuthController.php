@@ -16,9 +16,9 @@ class AuthController extends Controller
             'password' => ['required'],
         ]);
 
-        if (!Auth::attempt($credentials)) {
+        if (! Auth::attempt($credentials)) {
             return response()->json([
-                'message' => 'Credenciais inválidas.'
+                'message' => 'Credenciais inválidas.',
             ], 401);
         }
 
@@ -42,7 +42,7 @@ class AuthController extends Controller
         $request->session()->regenerateToken();
 
         return response()->json([
-            'message' => 'Logout realizado com sucesso.'
+            'message' => 'Logout realizado com sucesso.',
         ]);
     }
 
@@ -52,17 +52,13 @@ class AuthController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8'],
-            'role' => [
-                'required',
-                'string',
-                'in:' . implode(',', array_map(
-                    fn($role) => $role->value,
-                    UserRole::cases()
-                )),
-            ],
+            'role' => ['prohibited'],
         ]);
 
-        $user = User::create($validatedData);
+        $user = User::create([
+            ...$validatedData,
+            'role' => UserRole::REQUESTER,
+        ]);
 
         Auth::login($user);
 
