@@ -10,6 +10,9 @@ const router = createRouter({
       path: '/login',
       name: 'login',
       component: LoginView,
+      meta: {
+        title: 'Entrar',
+      },
     },
 
     {
@@ -23,16 +26,26 @@ const router = createRouter({
           path: '',
           name: 'home',
           component: () => import('@/views/HomeView.vue'),
+          meta: {
+            title: 'Início',
+          },
         },
         {
           path: 'tickets',
           name: 'tickets',
           component: () => import('@/views/TicketsView.vue'),
+          meta: {
+            title: 'Chamados',
+          },
         },
         {
           path: 'categories',
           name: 'categories',
           component: () => import('@/views/CategoriesView.vue'),
+          meta: {
+            role: 'admin',
+            title: 'Categorias',
+          },
         },
         {
           path: 'tickets/create',
@@ -40,12 +53,16 @@ const router = createRouter({
           component: () => import('@/views/CreateTicketView.vue'),
           meta: {
             role: 'requester',
+            title: 'Novo chamado',
           },
         },
         {
           path: 'tickets/:id',
           name: 'ticket-details',
           component: () => import('@/views/TicketDetailsView.vue'),
+          meta: {
+            title: 'Detalhes do chamado',
+          },
         },
       ],
     },
