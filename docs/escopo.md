@@ -21,12 +21,13 @@ O sistema deverá permitir:
 
 - Autenticação de usuários;
 - Cadastro e gerenciamento de categorias;
+- Cadastro e gerenciamento de usuários por administradores;
 - Abertura de chamados;
 - Listagem e consulta de chamados;
 - Atribuição de técnicos;
-- Alteração do status do chamado;
 - Registro da solução;
 - Adição de comentários;
+- Painel com resumo dos chamados disponíveis para o perfil autenticado;
 - Controle de permissões por perfil;
 - Validações de regras de negócio.
 
@@ -37,7 +38,6 @@ Neste primeiro momento, não serão implementados:
 - Notificações;
 - Anexos;
 - Relatórios avançados;
-- Dashboard;
 - Avaliação de atendimento;
 - Histórico detalhado de alterações.
 

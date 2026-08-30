@@ -47,7 +47,7 @@ Principais tecnologias:
 - Vue Router
 - Pinia
 - Axios
-- Tailwind CSS
+- CSS próprio com variáveis de design compartilhadas
 - Vite
 - Vitest
 - Vue Test Utils

@@ -76,27 +76,29 @@
 **Fluxo principal:**
 1. O administrador seleciona um chamado.
 2. O administrador seleciona um técnico.
-3. O sistema valida os dados.
-4. O técnico é atribuído ao chamado.
+3. O sistema valida que o chamado está aberto e sem técnico responsável.
+4. O técnico é atribuído ao chamado e o status passa para "Em atendimento".
 
 ---
 
-## UC06 - Alterar Status do Chamado
+## UC06 - Gerenciar Usuários
 
-**Ator:** Técnico ou Administrador.
+**Ator:** Administrador.
 
-**Pré-condição:** Usuário autenticado.
+**Pré-condição:** Administrador autenticado.
 
 **Fluxo principal:**
-1. O usuário seleciona um chamado.
-2. O sistema verifica as permissões.
-3. O usuário informa o novo status.
-4. O sistema valida a mudança.
-5. O status é atualizado.
+1. O administrador acessa a listagem de usuários.
+2. O administrador cadastra ou edita um usuário.
+3. O sistema valida os dados e o perfil selecionado.
+4. O sistema salva as informações do usuário.
 
 **Fluxo de exceção:**
-- Caso o usuário não tenha permissão, a operação é recusada.
-- Chamados fechados não podem ser alterados.
+- Caso o usuário não seja administrador, a operação é recusada.
+- Caso o e-mail já esteja em uso ou o perfil seja inválido, a operação é recusada.
+
+**Regra específica:**
+- Não existe cadastro público de usuários.
 
 ---
 
@@ -115,6 +117,7 @@
 **Fluxo de exceção:**
 - Chamados sem técnico responsável não podem ser resolvidos.
 - A solução é obrigatória.
+- Administradores não podem resolver chamados.
 
 ---
 
@@ -145,6 +148,9 @@
 2. O usuário informa o comentário.
 3. O sistema valida o conteúdo.
 4. O comentário é registrado.
+
+**Fluxo de exceção:**
+- Chamados fechados não aceitam novos comentários.
 
 ---
 

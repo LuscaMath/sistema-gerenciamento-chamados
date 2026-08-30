@@ -20,17 +20,17 @@ O sistema deve permitir a filtragem de chamados por status, prioridade e categor
 ### RF06 - Atribuir Técnico
 O técnico deve poder assumir um chamado disponível e o administrador deve poder atribuir um chamado a um técnico.
 
-### RF07 - Alterar Status
-O técnico responsável deve poder alterar o status do chamado durante o atendimento.
-
-### RF08 - Registrar Solução
+### RF07 - Registrar Solução
 O técnico responsável deve poder registrar a solução aplicada e marcar o chamado como resolvido.
 
-### RF09 - Adicionar Comentários
-Solicitantes e técnicos devem poder adicionar comentários aos chamados aos quais possuem acesso.
+### RF08 - Adicionar Comentários
+Solicitantes, técnicos e administradores devem poder adicionar comentários aos chamados aos quais possuem acesso.
 
-### RF10 - Fechar Chamado
+### RF09 - Fechar Chamado
 O solicitante deve poder fechar um chamado após sua resolução.
+
+### RF10 - Gerenciar Usuários
+O administrador deve poder listar, cadastrar e editar usuários, definindo os perfis de solicitante, técnico ou administrador.
 
 ## 2. Requisitos Não Funcionais
 
@@ -61,7 +61,7 @@ A interface web deve ser utilizável em diferentes tamanhos de tela.
 Um chamado não pode ser assumido por outro técnico enquanto já possuir um técnico responsável.
 
 ### RN02 - Atendimento
-Somente o técnico responsável pelo chamado ou um administrador pode alterar seu status durante o atendimento.
+Somente o técnico responsável pode resolver um chamado em atendimento. O administrador pode consultar chamados e atribuir um técnico, mas não pode assumi-los ou resolvê-los.
 
 ### RN03 - Resolução
 Um chamado somente pode ser marcado como resolvido quando possuir um técnico responsável e uma descrição da solução.
@@ -77,3 +77,6 @@ O solicitante pode consultar e interagir apenas com chamados criados por ele.
 
 ### RN07 - Gerenciamento de Categorias
 Somente administradores podem cadastrar, editar ou desativar categorias.
+
+### RN08 - Gerenciamento de Usuários
+Somente administradores podem listar, cadastrar ou editar usuários. Não existe cadastro público.
