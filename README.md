@@ -1,312 +1,171 @@
 # Sistema de Gerenciamento de Chamados
 
-Sistema web para registro, acompanhamento e atendimento de chamados técnicos, desenvolvido para a disciplina **Optativa II**.
-
-O projeto utiliza uma arquitetura separada entre **backend e frontend**, onde o backend disponibiliza uma API REST e o frontend consome seus recursos.
+Aplicação web para registrar, acompanhar e atender chamados técnicos. O projeto é composto por uma API REST em Laravel e uma SPA em Vue 3 + TypeScript, integradas por autenticação de sessão com Laravel Sanctum.
 
 ## Funcionalidades
 
-Atualmente o sistema possui:
-
-* Autenticação de SPA via Laravel Sanctum e cookies de sessão HttpOnly;
-* Controle de acesso por perfil de usuário;
-* Gerenciamento de categorias;
-* Abertura e consulta de chamados;
-* Filtros por status, prioridade e categoria;
-* Atribuição de chamados a técnicos;
-* Resolução e fechamento de chamados;
-* Comentários em chamados;
-* Validação de regras de negócio;
-* Documentação da API com OpenAPI/Swagger;
-* Testes automatizados.
-
-### Perfis de usuário
-
-O sistema possui três perfis:
-
-* **Solicitante (`requester`)**: abre e acompanha seus chamados;
-* **Técnico (`technician`)**: acompanha e atende chamados;
-* **Administrador (`admin`)**: possui acesso administrativo ao sistema.
+- Login e logout com cookies de sessão HttpOnly;
+- Controle de acesso para solicitantes, técnicos e administradores;
+- Gestão administrativa de usuários e categorias;
+- Criação, consulta e filtragem de chamados;
+- Atribuição de técnico pelo próprio técnico ou manualmente pelo administrador;
+- Resolução pelo técnico responsável e fechamento pelo solicitante dono do chamado;
+- Comentários em chamados não fechados;
+- Painel com resumo dos chamados disponíveis para o perfil autenticado.
 
 ## Tecnologias
 
-### Backend
+| Camada | Tecnologias |
+| --- | --- |
+| Backend | PHP 8.3, Laravel, Sanctum, MySQL, Pest e Scramble/OpenAPI |
+| Frontend | Vue 3, TypeScript, Vue Router, Pinia, Axios, Vitest e CSS próprio |
 
-* PHP
-* Laravel
-* Laravel Sanctum
-* MySQL
-* Pest
-* Scramble / OpenAPI
+## Pré-requisitos
 
-### Frontend
+- PHP 8.3 ou superior;
+- Composer;
+- MySQL;
+- Node.js 22.18 ou superior, ou 24.12 ou superior;
+- npm.
 
-* Vue 3
-* TypeScript
-* Axios
-* Pinia
-* Tailwind CSS
-* Vitest
+## Execução local
 
-## Estrutura do Projeto
-
-```text
-sistema-gerenciamento-chamados/
-├── backend/       # API REST desenvolvida em Laravel
-├── frontend/      # Aplicação cliente desenvolvida em Vue
-├── docs/          # Documentação do sistema
-├── .gitignore
-└── README.md
-```
-
-## Executando o Backend
-
-### Pré-requisitos
-
-Para executar o backend é necessário possuir:
-
-* PHP
-* Composer
-* MySQL
-
-### 1. Clonar o repositório
+### 1. Obter o projeto
 
 ```bash
 git clone <URL_DO_REPOSITORIO>
 cd sistema-gerenciamento-chamados
 ```
 
-### 2. Instalar as dependências
+### 2. Configurar o backend
 
 ```bash
 cd backend
 composer install
 ```
 
-### 3. Configurar o ambiente
-
-Copie o arquivo `.env.example`:
-
-```bash
-cp .env.example .env
-```
-
-No Windows PowerShell:
+Crie o arquivo de ambiente a partir do exemplo. No PowerShell:
 
 ```powershell
 Copy-Item .env.example .env
-```
-
-Gere a chave da aplicação:
-
-```bash
 php artisan key:generate
 ```
 
-### 4. Configurar o banco de dados
-
-Crie um banco MySQL:
+Crie o banco no MySQL e ajuste, se necessário, as variáveis `DB_*` em `backend/.env`:
 
 ```sql
 CREATE DATABASE gerenciamento_chamados;
 ```
 
-Configure o `.env`:
-
-```env
-DB_CONNECTION=mysql
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_DATABASE=gerenciamento_chamados
-DB_USERNAME=root
-DB_PASSWORD=
-```
-
-Ajuste usuário, senha e porta de acordo com seu ambiente.
-
-### 5. Criar e popular o banco
+Execute as migrations e os dados de demonstração:
 
 ```bash
 php artisan migrate --seed
 ```
 
-Para recriar completamente o banco durante o desenvolvimento:
+Para recriar o banco durante o desenvolvimento:
 
 ```bash
 php artisan migrate:fresh --seed
 ```
 
-### 6. Executar a API
+Inicie a API com o mesmo host definido em `APP_URL`:
 
 ```bash
-php artisan serve
+php artisan serve --host=localhost --port=8000
 ```
 
-Por padrão, a aplicação estará disponível em:
+### 3. Configurar o frontend
 
-```text
-http://127.0.0.1:8000
-```
-
-A URL base da API é:
-
-```text
-http://127.0.0.1:8000/api/v1
-```
-
-## Usuários de Desenvolvimento
-
-Os seeders criam os seguintes usuários:
-
-| Perfil        | E-mail                | Senha      |
-| ------------- | --------------------- | ---------- |
-| Administrador | `admin@email.com`     | `12345678` |
-| Técnico       | `tecnico@email.com`   | `12345678` |
-| Solicitante   | `requester@email.com` | `12345678` |
-
-Essas credenciais são destinadas exclusivamente ao ambiente de desenvolvimento.
-
-## Documentação da API
-
-A documentação interativa da API é gerada através do Scramble/OpenAPI.
-
-Com o backend em execução, acesse:
-
-```text
-http://127.0.0.1:8000/docs/api
-```
-
-O documento OpenAPI também está disponível em:
-
-```text
-http://127.0.0.1:8000/docs/api.json
-```
-
-A documentação complementar dos contratos da API está disponível em:
-
-```text
-docs/api.md
-```
-
-## Testes
-
-Os testes automatizados utilizam Pest.
-
-Para executar toda a suíte:
-
-```bash
-php artisan test
-```
-
-Ou diretamente pelo Pest:
-
-```bash
-./vendor/bin/pest
-```
-
-No Windows PowerShell:
-
-```powershell
-.\vendor\bin\pest
-```
-
-Os testes cobrem, entre outros cenários:
-
-* Permissões de usuários;
-* Gerenciamento de categorias;
-* Criação e visualização de chamados;
-* Atribuição de técnicos;
-* Resolução e fechamento;
-* Comentários;
-* Filtros de chamados;
-* Regras de negócio.
-
-## Fluxo dos Chamados
-
-O fluxo principal de um chamado é:
-
-```text
-Aberto
-  ↓
-Em atendimento
-  ↓
-Resolvido
-  ↓
-Fechado
-```
-
-Internamente:
-
-```text
-open → in_progress → resolved → closed
-```
-
-## Arquitetura
-
-O backend utiliza uma organização baseada na separação de responsabilidades:
-
-```text
-Request HTTP
-    ↓
-Form Request
-    ↓
-Controller
-    ↓
-Service
-    ↓
-Model / Eloquent
-    ↓
-Banco de Dados
-```
-
-Além disso:
-
-* **Form Requests** realizam validações de entrada;
-* **Controllers** coordenam requisições e respostas;
-* **Services** concentram regras de negócio;
-* **Policies** controlam autorização;
-* **Models** representam as entidades;
-* **API Resources** padronizam as respostas JSON;
-* **Enums** representam estados e valores controlados.
-
-Mais detalhes estão disponíveis em:
-
-```text
-docs/arquitetura.md
-```
-
-## Documentação
-
-A pasta `docs/` contém a documentação complementar do projeto:
-
-```text
-docs/
-├── api.md
-├── arquitetura.md
-├── casos-de-uso.md
-├── escopo.md
-└── requisitos.md
-```
-
-## Frontend
-
-O frontend é desenvolvido separadamente com Vue 3 e TypeScript e consome a API REST disponibilizada pelo Laravel. A autenticação utiliza cookies de sessão do Sanctum; não há armazenamento de token no navegador.
-
-Configure `frontend/.env` a partir de `frontend/.env.example`, instale as dependências e inicie a aplicação:
+Em outro terminal, a partir da raiz do repositório:
 
 ```bash
 cd frontend
+```
+
+Crie o arquivo de ambiente. No PowerShell:
+
+```powershell
+Copy-Item .env.example .env
+```
+
+O valor padrão de `VITE_BACKEND_URL` é `http://localhost:8000` e deve corresponder ao endereço da API.
+
+Instale as dependências e inicie a SPA:
+
+```bash
 npm install
 npm run dev
 ```
 
-## DevOps
+Abra `http://localhost:5173` no navegador.
 
-A arquitetura separada entre frontend e backend também prepara o projeto para a etapa de DevOps, que poderá incluir:
+## Autenticação SPA
 
-* Docker;
-* Docker Compose;
-* Nginx;
-* CI/CD;
-* GitLab CI/CD;
-* Ambientes separados de desenvolvimento e produção.
+O frontend solicita o cookie CSRF antes do login e envia cookies de sessão nas requisições seguintes. Não há tokens armazenados no navegador.
+
+Em ambiente local, mantenha os valores abaixo coerentes no `backend/.env`:
+
+```env
+APP_URL=http://localhost:8000
+FRONTEND_URLS=http://localhost:5173
+SANCTUM_STATEFUL_DOMAINS=localhost:5173
+```
+
+Para outro domínio ou porta, atualize os três valores e `VITE_BACKEND_URL` no frontend. Para múltiplas origens permitidas, separe `FRONTEND_URLS` por vírgulas, sem espaços.
+
+## Usuários de demonstração
+
+Os seeders criam usuários somente para desenvolvimento:
+
+| Perfil | E-mail | Senha |
+| --- | --- | --- |
+| Administrador | `admin@email.com` | `12345678` |
+| Técnico | `tecnico@email.com` | `12345678` |
+| Solicitante | `requester@email.com` | `12345678` |
+
+Não existe cadastro público. Em uso normal, o administrador cria os demais usuários pela tela **Usuários**.
+
+## Comandos de validação
+
+Backend:
+
+```bash
+cd backend
+php artisan test
+./vendor/bin/pint --test
+```
+
+Frontend:
+
+```bash
+cd frontend
+npm run lint
+npm run type-check
+npx vitest run
+npm run build
+```
+
+## Documentação da API
+
+Com a API em execução, a documentação interativa está em `http://localhost:8000/docs/api` e o documento OpenAPI em `http://localhost:8000/docs/api.json`.
+
+Os contratos e documentos complementares estão em [docs](docs/):
+
+- [API](docs/api.md);
+- [Arquitetura](docs/arquitetura.md);
+- [Casos de uso](docs/casos-de-uso.md);
+- [Escopo](docs/escopo.md);
+- [Requisitos](docs/requisitos.md).
+
+## Estrutura
+
+```text
+backend/   API Laravel, regras de negócio e testes Pest
+frontend/  SPA Vue, testes Vitest e estilos
+docs/      Contratos e documentação do projeto
+```
+
+## Preparação para produção
+
+Antes de publicar, defina valores próprios para `APP_KEY`, credenciais de banco e o usuário administrador inicial. Utilize HTTPS, `APP_ENV=production`, `APP_DEBUG=false` e `SESSION_SECURE_COOKIE=true`; também configure os domínios reais em `APP_URL`, `FRONTEND_URLS` e `SANCTUM_STATEFUL_DOMAINS`.
