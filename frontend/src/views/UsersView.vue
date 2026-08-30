@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
-import { createUser, getUsers, updateUser } from '@/api/users'
+import { activateUser, createUser, deactivateUser, getUsers, updateUser } from '@/api/users'
 import type { User, UserRole } from '@/types/user'
 
 const users = ref<User[]>([])
@@ -8,6 +8,7 @@ const loading = ref(true)
 const error = ref('')
 const formError = ref('')
 const formLoading = ref(false)
+const statusLoading = ref<number | null>(null)
 const formOpen = ref(false)
 const editingUserId = ref<number | null>(null)
 const name = ref('')
@@ -23,6 +24,10 @@ function roleLabel(userRole: UserRole) {
     technician: 'Técnico',
     admin: 'Administrador',
   }[userRole]
+}
+
+function statusLabel(isActive: boolean) {
+  return isActive ? 'Ativo' : 'Inativo'
 }
 
 function initials(userName: string) {
@@ -118,6 +123,25 @@ async function submitForm() {
   }
 }
 
+async function toggleUserStatus(user: User) {
+  statusLoading.value = user.id
+  error.value = ''
+
+  try {
+    if (user.is_active) {
+      await deactivateUser(user.id)
+    } else {
+      await activateUser(user.id)
+    }
+
+    await loadUsers()
+  } catch {
+    error.value = 'Não foi possível atualizar o status do usuário.'
+  } finally {
+    statusLoading.value = null
+  }
+}
+
 onMounted(loadUsers)
 </script>
 
@@ -142,6 +166,7 @@ onMounted(loadUsers)
       <div class="users-table-header">
         <span>Usuário</span>
         <span>Perfil</span>
+        <span>Status</span>
         <span>Ações</span>
       </div>
       <article v-for="user in users" :key="user.id" class="user-row">
@@ -153,14 +178,31 @@ onMounted(loadUsers)
           >
         </div>
         <span class="role-badge" :class="`role-${user.role}`">{{ roleLabel(user.role) }}</span>
-        <button
-          class="icon-button"
-          type="button"
-          aria-label="Editar usuário"
-          @click="editUser(user)"
-        >
-          <span class="material-symbols-outlined">edit</span>
-        </button>
+        <span class="status-badge" :class="user.is_active ? 'status-active' : 'status-inactive'">
+          {{ statusLabel(user.is_active) }}
+        </span>
+        <div class="user-actions">
+          <button
+            class="icon-button"
+            type="button"
+            aria-label="Editar usuário"
+            :disabled="statusLoading === user.id"
+            @click="editUser(user)"
+          >
+            <span class="material-symbols-outlined">edit</span>
+          </button>
+          <button
+            class="icon-button"
+            type="button"
+            :aria-label="user.is_active ? 'Desativar usuário' : 'Reativar usuário'"
+            :disabled="statusLoading === user.id"
+            @click="toggleUserStatus(user)"
+          >
+            <span class="material-symbols-outlined">{{
+              user.is_active ? 'block' : 'check_circle'
+            }}</span>
+          </button>
+        </div>
       </article>
     </div>
 
@@ -272,7 +314,7 @@ onMounted(loadUsers)
 .users-table-header,
 .user-row {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 170px 72px;
+  grid-template-columns: minmax(0, 1fr) 160px 96px 96px;
   align-items: center;
   gap: 16px;
   padding: 16px 24px;
@@ -345,6 +387,28 @@ onMounted(loadUsers)
 .role-admin {
   background: var(--success-soft);
   color: var(--success);
+}
+.status-badge {
+  display: inline-flex;
+  width: fit-content;
+  min-height: 26px;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+}
+.status-active {
+  background: var(--success-soft);
+  color: var(--success);
+}
+.status-inactive {
+  background: var(--closed-soft);
+  color: var(--closed);
+}
+.user-actions {
+  display: flex;
+  gap: 4px;
 }
 .icon-button {
   display: inline-grid;
@@ -422,9 +486,12 @@ onMounted(loadUsers)
   .role-badge {
     grid-column: 1;
   }
-  .user-row .icon-button {
+  .status-badge {
+    grid-column: 1;
+  }
+  .user-actions {
     grid-column: 2;
-    grid-row: 1 / span 2;
+    grid-row: 1 / span 3;
   }
   .modal-actions {
     flex-direction: column-reverse;

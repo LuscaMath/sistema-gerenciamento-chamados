@@ -21,4 +21,14 @@ class UserPolicy
     {
         return $user->role === UserRole::ADMIN;
     }
+
+    public function deactivate(User $user, User $managedUser): bool
+    {
+        return $user->role === UserRole::ADMIN;
+    }
+
+    public function activate(User $user, User $managedUser): bool
+    {
+        return $user->role === UserRole::ADMIN;
+    }
 }

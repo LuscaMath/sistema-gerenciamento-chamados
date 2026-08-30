@@ -1,10 +1,12 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { flushPromises, mount } from '@vue/test-utils'
 import UsersView from '@/views/UsersView.vue'
-import { createUser, getUsers } from '@/api/users'
+import { activateUser, createUser, deactivateUser, getUsers } from '@/api/users'
 
 vi.mock('@/api/users', () => ({
+  activateUser: vi.fn<() => void>(),
   createUser: vi.fn<() => void>(),
+  deactivateUser: vi.fn<() => void>(),
   getUsers: vi.fn<() => void>(),
   updateUser: vi.fn<() => void>(),
 }))
@@ -15,6 +17,7 @@ const users = [
     name: 'Ana Técnica',
     email: 'ana@example.com',
     role: 'technician' as const,
+    is_active: true,
     created_at: '2026-08-30T12:00:00.000000Z',
   },
 ]
@@ -32,6 +35,7 @@ describe('UsersView', () => {
 
     expect(wrapper.text()).toContain('Ana Técnica')
     expect(wrapper.text()).toContain('Técnico')
+    expect(wrapper.text()).toContain('Ativo')
   })
 
   it('creates a user from the administrative form', async () => {
@@ -53,5 +57,34 @@ describe('UsersView', () => {
       password: 'password123',
       role: 'requester',
     })
+  })
+
+  it('desativa um usuário ativo', async () => {
+    vi.mocked(deactivateUser).mockResolvedValue({ data: { data: users[0] } } as never)
+
+    const wrapper = mount(UsersView)
+
+    await flushPromises()
+    await wrapper.find('[aria-label="Desativar usuário"]').trigger('click')
+    await flushPromises()
+
+    expect(deactivateUser).toHaveBeenCalledWith(users[0]!.id)
+  })
+
+  it('reativa um usuário inativo', async () => {
+    const inactiveUser = {
+      ...users[0]!,
+      is_active: false,
+    }
+    vi.mocked(getUsers).mockResolvedValue({ data: { data: [inactiveUser] } } as never)
+    vi.mocked(activateUser).mockResolvedValue({ data: { data: inactiveUser } } as never)
+
+    const wrapper = mount(UsersView)
+
+    await flushPromises()
+    await wrapper.find('[aria-label="Reativar usuário"]').trigger('click')
+    await flushPromises()
+
+    expect(activateUser).toHaveBeenCalledWith(inactiveUser.id)
   })
 })

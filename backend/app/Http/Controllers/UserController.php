@@ -35,4 +35,18 @@ class UserController extends Controller
 
         return new UserResource($this->service->update($user, $request->validated()));
     }
+
+    public function deactivate(User $user): UserResource
+    {
+        $this->authorize('deactivate', $user);
+
+        return new UserResource($this->service->deactivate($user, request()->user()));
+    }
+
+    public function activate(User $user): UserResource
+    {
+        $this->authorize('activate', $user);
+
+        return new UserResource($this->service->activate($user));
+    }
 }

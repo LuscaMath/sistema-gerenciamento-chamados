@@ -89,16 +89,18 @@
 
 **Fluxo principal:**
 1. O administrador acessa a listagem de usuários.
-2. O administrador cadastra ou edita um usuário.
+2. O administrador cadastra, edita, desativa ou reativa um usuário.
 3. O sistema valida os dados e o perfil selecionado.
 4. O sistema salva as informações do usuário.
 
 **Fluxo de exceção:**
 - Caso o usuário não seja administrador, a operação é recusada.
 - Caso o e-mail já esteja em uso ou o perfil seja inválido, a operação é recusada.
+- Um administrador não pode desativar o próprio usuário.
 
 **Regra específica:**
 - Não existe cadastro público de usuários.
+- Usuários desativados permanecem no histórico, mas não podem autenticar ou usar uma sessão existente.
 
 ---
 

@@ -64,6 +64,7 @@ class TicketService
     {
         return User::query()
             ->where('role', UserRole::TECHNICIAN)
+            ->where('is_active', true)
             ->orderBy('name')
             ->get();
     }
@@ -72,6 +73,10 @@ class TicketService
     {
         if ($technician->role !== UserRole::TECHNICIAN) {
             throw new BusinessException('O usuário selecionado deve ser um técnico.');
+        }
+
+        if (! $technician->is_active) {
+            throw new BusinessException('O técnico selecionado está desativado.');
         }
 
         if ($ticket->technician_id !== null) {

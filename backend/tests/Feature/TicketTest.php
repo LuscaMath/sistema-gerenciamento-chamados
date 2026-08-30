@@ -447,6 +447,27 @@ it('allows manual assignment only for open tickets', function () {
     ])->assertUnprocessable();
 });
 
+it('does not allow admin to assign a deactivated technician', function () {
+    $admin = User::factory()->create([
+        'role' => UserRole::ADMIN,
+    ]);
+
+    $technician = User::factory()->create([
+        'role' => UserRole::TECHNICIAN,
+        'is_active' => false,
+    ]);
+
+    $ticket = createOpenTicket();
+
+    Sanctum::actingAs($admin);
+
+    $this->patchJson("/api/v1/tickets/{$ticket->id}/assign-technician", [
+        'technician_id' => $technician->id,
+    ])
+        ->assertUnprocessable()
+        ->assertJsonPath('message', 'O técnico selecionado está desativado.');
+});
+
 it('forbids admin from assuming or resolving tickets', function () {
     $admin = User::factory()->create([
         'role' => UserRole::ADMIN,
@@ -454,6 +475,11 @@ it('forbids admin from assuming or resolving tickets', function () {
 
     $technician = User::factory()->create([
         'role' => UserRole::TECHNICIAN,
+    ]);
+
+    User::factory()->create([
+        'role' => UserRole::TECHNICIAN,
+        'is_active' => false,
     ]);
 
     $openTicket = createOpenTicket();

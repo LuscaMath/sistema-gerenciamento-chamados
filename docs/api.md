@@ -80,6 +80,25 @@ Regras:
 - A senha é obrigatória apenas na criação; ao editar, ela pode ser omitida para mantê-la.
 - Não existe cadastro público de usuários.
 
+### Desativar Usuário
+
+PATCH `/api/v1/users/{id}/deactivate`
+
+Não possui corpo.
+
+### Reativar Usuário
+
+PATCH `/api/v1/users/{id}/activate`
+
+Não possui corpo.
+
+Regras:
+
+- Apenas administradores podem ativar ou desativar usuários.
+- Usuários desativados permanecem no histórico, mas não podem autenticar ou usar uma sessão existente.
+- Um administrador não pode desativar o próprio usuário.
+- A resposta de usuário inclui o campo booleano `is_active`.
+
 ---
 
 ## 4. Chamados
@@ -157,7 +176,7 @@ GET `/api/v1/technicians`
 Regras:
 
 - Apenas administradores podem consultar a lista.
-- A resposta contém somente usuários com perfil `technician`.
+- A resposta contém somente usuários ativos com perfil `technician`.
 
 ### Atribuir Técnico Manualmente
 
@@ -173,6 +192,7 @@ Regras:
 
 - Apenas administradores podem atribuir um técnico.
 - O usuário selecionado deve possuir o perfil `technician`.
+- O técnico selecionado deve estar ativo.
 - O chamado deve estar aberto e não pode possuir técnico responsável.
 - A atribuição altera o status para `in_progress`.
 

@@ -79,4 +79,4 @@ O solicitante pode consultar e interagir apenas com chamados criados por ele.
 Somente administradores podem cadastrar, editar ou desativar categorias.
 
 ### RN08 - Gerenciamento de Usuários
-Somente administradores podem listar, cadastrar ou editar usuários. Não existe cadastro público.
+Somente administradores podem listar, cadastrar, editar, desativar ou reativar usuários. Não existe cadastro público, e usuários desativados não podem acessar o sistema.

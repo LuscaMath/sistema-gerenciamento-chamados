@@ -27,3 +27,11 @@ export function createUser(payload: Required<UserPayload>) {
 export function updateUser(id: number, payload: UserPayload) {
   return api.put<UserResponse>(`/api/v1/users/${id}`, payload)
 }
+
+export function deactivateUser(id: number) {
+  return api.patch<UserResponse>(`/api/v1/users/${id}/deactivate`)
+}
+
+export function activateUser(id: number) {
+  return api.patch<UserResponse>(`/api/v1/users/${id}/activate`)
+}

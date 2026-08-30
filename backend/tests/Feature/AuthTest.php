@@ -3,6 +3,7 @@
 use App\Enums\UserRole;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Laravel\Sanctum\Sanctum;
 
 uses(RefreshDatabase::class);
 
@@ -35,4 +36,29 @@ it('rejects invalid login credentials', function () {
     ])
         ->assertUnauthorized()
         ->assertJsonPath('message', 'Credenciais inválidas.');
+});
+
+it('rejects login from a deactivated user', function () {
+    $user = User::factory()->create([
+        'is_active' => false,
+    ]);
+
+    $this->postJson('/api/v1/login', [
+        'email' => $user->email,
+        'password' => 'password',
+    ])
+        ->assertUnauthorized()
+        ->assertJsonPath('message', 'Credenciais inválidas.');
+});
+
+it('blocks requests from a deactivated authenticated user', function () {
+    $user = User::factory()->create([
+        'is_active' => false,
+    ]);
+
+    Sanctum::actingAs($user);
+
+    $this->getJson('/api/v1/me')
+        ->assertForbidden()
+        ->assertJsonPath('message', 'Usuário desativado.');
 });

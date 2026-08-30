@@ -6,7 +6,7 @@ Aplicação web para registrar, acompanhar e atender chamados técnicos. O proje
 
 - Login e logout com cookies de sessão HttpOnly;
 - Controle de acesso para solicitantes, técnicos e administradores;
-- Gestão administrativa de usuários e categorias;
+- Gestão administrativa de usuários e categorias, incluindo desativação reversível de usuários;
 - Criação, consulta e filtragem de chamados;
 - Atribuição de técnico pelo próprio técnico ou manualmente pelo administrador;
 - Resolução pelo técnico responsável e fechamento pelo solicitante dono do chamado;
@@ -126,6 +126,8 @@ Os seeders criam usuários somente para desenvolvimento:
 
 Não existe cadastro público. Em uso normal, o administrador cria os demais usuários pela tela **Usuários**.
 
+Usuários desativados permanecem vinculados aos chamados e comentários já registrados, mas não podem fazer login ou utilizar uma sessão existente. Apenas outro administrador pode reativá-los.
+
 ## Comandos de validação
 
 Backend:
@@ -166,6 +168,3 @@ frontend/  SPA Vue, testes Vitest e estilos
 docs/      Contratos e documentação do projeto
 ```
 
-## Preparação para produção
-
-Antes de publicar, defina valores próprios para `APP_KEY`, credenciais de banco e o usuário administrador inicial. Utilize HTTPS, `APP_ENV=production`, `APP_DEBUG=false` e `SESSION_SECURE_COOKIE=true`; também configure os domínios reais em `APP_URL`, `FRONTEND_URLS` e `SANCTUM_STATEFUL_DOMAINS`.
