@@ -68,6 +68,10 @@ async function handleLogout() {
           <span class="material-symbols-outlined">category</span>
           Categorias
         </RouterLink>
+        <RouterLink v-if="auth.user?.role === 'admin'" class="nav-link" to="/users">
+          <span class="material-symbols-outlined">group</span>
+          Usuários
+        </RouterLink>
       </nav>
 
       <button class="nav-link logout-button" @click="handleLogout">
@@ -102,6 +106,10 @@ async function handleLogout() {
       <RouterLink v-if="auth.user?.role === 'admin'" class="nav-link" to="/categories">
         <span class="material-symbols-outlined">category</span>
         Categorias
+      </RouterLink>
+      <RouterLink v-if="auth.user?.role === 'admin'" class="nav-link" to="/users">
+        <span class="material-symbols-outlined">group</span>
+        Usuários
       </RouterLink>
     </nav>
   </div>

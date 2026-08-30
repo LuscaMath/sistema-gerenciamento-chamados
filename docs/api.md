@@ -18,25 +18,7 @@ O frontend é uma SPA autenticada pelo Laravel Sanctum com cookies de sessão Ht
 
 GET `/sanctum/csrf-cookie`
 
-Esse endpoint não pertence ao prefixo `/api/v1`. Ele deve ser chamado pelo cliente SPA antes de `login` ou `register`.
-
-### Registrar Solicitante
-
-POST `/api/v1/register`
-
-Corpo:
-
-{
-  "name": "Novo Solicitante",
-  "email": "usuario@email.com",
-  "password": "senha-com-no-minimo-8-caracteres"
-}
-
-Regras:
-
-- O cadastro público cria exclusivamente usuários com perfil `requester`.
-- O campo `role` não é aceito nesse endpoint.
-- Criação de usuários técnicos ou administradores deve ocorrer por um fluxo administrativo autenticado.
+Esse endpoint não pertence ao prefixo `/api/v1`. Ele deve ser chamado pelo cliente SPA antes de `login`.
 
 ### Realizar Login
 
@@ -59,7 +41,48 @@ POST `/api/v1/logout`
 
 ---
 
-## 3. Chamados
+## 3. Usuários
+
+Todos os endpoints desta seção exigem um administrador autenticado.
+
+### Listar Usuários
+
+GET `/api/v1/users`
+
+### Criar Usuário
+
+POST `/api/v1/users`
+
+Corpo:
+
+{
+  "name": "Novo Técnico",
+  "email": "tecnico@empresa.com",
+  "password": "senha-com-no-minimo-8-caracteres",
+  "role": "technician"
+}
+
+### Atualizar Usuário
+
+PUT `/api/v1/users/{id}`
+
+Corpo:
+
+{
+  "name": "Nome atualizado",
+  "email": "usuario@empresa.com",
+  "role": "requester"
+}
+
+Regras:
+
+- Os perfis aceitos são `requester`, `technician` e `admin`.
+- A senha é obrigatória apenas na criação; ao editar, ela pode ser omitida para mantê-la.
+- Não existe cadastro público de usuários.
+
+---
+
+## 4. Chamados
 
 ### Listar Chamados
 
@@ -112,7 +135,7 @@ Regras:
 
 ---
 
-## 4. Atendimento
+## 5. Atendimento
 
 ### Assumir Chamado
 
@@ -186,7 +209,7 @@ Regras:
 
 ---
 
-## 5. Comentários
+## 6. Comentários
 
 ### Listar Comentários
 
@@ -214,7 +237,7 @@ Regras:
 
 ---
 
-## 6. Categorias
+## 7. Categorias
 
 ### Listar Categorias
 
@@ -278,7 +301,7 @@ Regras:
 
 ---
 
-## 7. Status dos Chamados
+## 8. Status dos Chamados
 
 - `open` - Aberto
 - `in_progress` - Em atendimento
@@ -291,7 +314,7 @@ Fluxo principal:
 
 ---
 
-## 8. Prioridades
+## 9. Prioridades
 
 - `low` - Baixa
 - `medium` - Média
@@ -299,7 +322,7 @@ Fluxo principal:
 
 ---
 
-## 9. Perfis de Usuário
+## 10. Perfis de Usuário
 
 - `requester` - Solicitante
 - `technician` - Técnico
@@ -307,7 +330,7 @@ Fluxo principal:
 
 ---
 
-## 10. Respostas HTTP
+## 11. Respostas HTTP
 
 - `200 OK` - Operação realizada com sucesso.
 - `201 Created` - Recurso criado com sucesso.

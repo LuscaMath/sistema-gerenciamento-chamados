@@ -1,14 +1,6 @@
 import { defineStore } from 'pinia'
 import { api } from '@/api/client'
-
-type UserRole = 'requester' | 'technician' | 'admin'
-
-interface User {
-  id: number
-  name: string
-  email: string
-  role: UserRole
-}
+import type { User } from '@/types/user'
 
 interface LoginPayload {
   email: string
@@ -32,10 +24,7 @@ export const useAuthStore = defineStore('auth', {
     async login(payload: LoginPayload) {
       await api.get('/sanctum/csrf-cookie')
 
-      const response = await api.post<LoginResponse>(
-        '/api/v1/login',
-        payload,
-      )
+      const response = await api.post<LoginResponse>('/api/v1/login', payload)
 
       this.user = response.data.user
     },

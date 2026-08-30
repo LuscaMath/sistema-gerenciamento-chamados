@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\UserRole;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -44,28 +42,5 @@ class AuthController extends Controller
         return response()->json([
             'message' => 'Logout realizado com sucesso.',
         ]);
-    }
-
-    public function register(Request $request)
-    {
-        $validatedData = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'password' => ['required', 'string', 'min:8'],
-            'role' => ['prohibited'],
-        ]);
-
-        $user = User::create([
-            ...$validatedData,
-            'role' => UserRole::REQUESTER,
-        ]);
-
-        Auth::login($user);
-
-        $request->session()->regenerate();
-
-        return response()->json([
-            'user' => $user,
-        ], 201);
     }
 }

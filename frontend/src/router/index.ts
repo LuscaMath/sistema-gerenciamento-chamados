@@ -48,6 +48,15 @@ const router = createRouter({
           },
         },
         {
+          path: 'users',
+          name: 'users',
+          component: () => import('@/views/UsersView.vue'),
+          meta: {
+            role: 'admin',
+            title: 'Usuários',
+          },
+        },
+        {
           path: 'tickets/create',
           name: 'ticket-create',
           component: () => import('@/views/CreateTicketView.vue'),
