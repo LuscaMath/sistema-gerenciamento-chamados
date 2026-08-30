@@ -4,9 +4,9 @@ import UsersView from '@/views/UsersView.vue'
 import { createUser, getUsers } from '@/api/users'
 
 vi.mock('@/api/users', () => ({
-  createUser: vi.fn(),
-  getUsers: vi.fn(),
-  updateUser: vi.fn(),
+  createUser: vi.fn<() => void>(),
+  getUsers: vi.fn<() => void>(),
+  updateUser: vi.fn<() => void>(),
 }))
 
 const users = [

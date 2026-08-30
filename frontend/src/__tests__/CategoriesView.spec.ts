@@ -4,11 +4,11 @@ import CategoriesView from '@/views/CategoriesView.vue'
 import { createCategory, getCategories } from '@/api/categories'
 
 vi.mock('@/api/categories', () => ({
-  activateCategory: vi.fn(),
-  createCategory: vi.fn(),
-  deactivateCategory: vi.fn(),
-  getCategories: vi.fn(),
-  updateCategory: vi.fn(),
+  activateCategory: vi.fn<() => void>(),
+  createCategory: vi.fn<() => void>(),
+  deactivateCategory: vi.fn<() => void>(),
+  getCategories: vi.fn<() => void>(),
+  updateCategory: vi.fn<() => void>(),
 }))
 
 const categories = [
