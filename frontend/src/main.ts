@@ -10,10 +10,16 @@ const app = createApp(App)
 const pinia = createPinia()
 
 app.use(pinia)
-app.use(router)
 
 const auth = useAuthStore()
 
-auth.fetchUser().finally(() => {
+async function bootstrap() {
+  await auth.fetchUser()
+
+  app.use(router)
+  await router.isReady()
+
   app.mount('#app')
-})
+}
+
+bootstrap()
