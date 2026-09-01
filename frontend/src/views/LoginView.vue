@@ -33,7 +33,7 @@ async function handleLogin() {
         <span class="material-symbols-outlined">support_agent</span>
       </div>
       <div class="login-heading">
-        <h1>Ledger Support</h1>
+        <h1>YTickets</h1>
         <p>Acesse para acompanhar e gerenciar seus chamados.</p>
       </div>
 
@@ -76,7 +76,7 @@ async function handleLogin() {
         </button>
       </form>
 
-      <p class="login-help">Use as credenciais fornecidas para o ambiente de desenvolvimento.</p>
+      <p class="login-help">Use as credenciais fornecidas pelo administrador do sistema.</p>
     </section>
   </main>
 </template>

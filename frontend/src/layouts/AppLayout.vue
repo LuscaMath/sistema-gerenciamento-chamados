@@ -40,7 +40,7 @@ async function handleLogout() {
     <aside class="app-sidebar">
       <div class="brand">
         <span class="brand-mark material-symbols-outlined">support_agent</span>
-        <span>Ledger Support</span>
+        <span>YTickets</span>
       </div>
 
       <div class="user-summary">
