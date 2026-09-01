@@ -43,12 +43,15 @@ select,
 textarea {
   font: inherit;
 }
+
 button {
   cursor: pointer;
 }
+
 button:disabled {
   cursor: not-allowed;
 }
+
 a {
   color: inherit;
   text-decoration: none;
@@ -88,6 +91,7 @@ a {
   font-size: 20px;
   font-weight: 700;
 }
+
 .brand-mark,
 .avatar {
   display: grid;
@@ -97,11 +101,13 @@ a {
   color: #fff;
   font-weight: 700;
 }
+
 .brand-mark {
   width: 36px;
   height: 36px;
   border-radius: 10px;
 }
+
 .avatar {
   width: 40px;
   height: 40px;
@@ -119,11 +125,13 @@ a {
   border-radius: 12px;
   background: var(--surface-white);
 }
-.user-summary strong,
-.user-summary span {
+
+.user-summary>div>strong,
+.user-summary>div>span {
   display: block;
 }
-.user-summary span {
+
+.user-summary>div>span {
   margin-top: 2px;
   color: var(--text-muted);
   font-size: 12px;
@@ -134,10 +142,12 @@ a {
   display: flex;
   gap: 6px;
 }
+
 .side-nav {
   flex: 1;
   flex-direction: column;
 }
+
 .nav-link {
   display: flex;
   align-items: center;
@@ -150,23 +160,28 @@ a {
   font-weight: 600;
   letter-spacing: 0.03em;
 }
+
 .nav-link:hover {
   background: var(--surface-high);
 }
+
 .nav-link.router-link-exact-active {
   background: var(--primary-soft);
   color: var(--primary);
 }
+
 .logout-button {
   width: 100%;
   border: 0;
   background: transparent;
   text-align: left;
 }
+
 .app-main {
   min-height: 100vh;
   margin-left: 272px;
 }
+
 .mobile-header,
 .mobile-nav {
   display: none;
@@ -177,6 +192,7 @@ a {
   margin: 0 auto;
   padding: 40px 32px;
 }
+
 .page-heading {
   display: flex;
   align-items: end;
@@ -184,12 +200,14 @@ a {
   gap: 24px;
   margin-bottom: 32px;
 }
+
 .page-heading h1 {
   margin: 0;
   font-size: 32px;
   line-height: 40px;
   letter-spacing: -0.02em;
 }
+
 .page-heading p {
   max-width: 660px;
   margin: 8px 0 0;
@@ -197,6 +215,7 @@ a {
   font-size: 16px;
   line-height: 24px;
 }
+
 .card {
   border: 1px solid var(--outline);
   border-radius: 16px;
@@ -222,33 +241,40 @@ a {
     border-color 160ms ease,
     color 160ms ease;
 }
+
 .primary-button {
   border: 1px solid var(--primary);
   background: var(--primary);
   color: #fff;
 }
+
 .primary-button:hover:not(:disabled) {
   border-color: var(--primary-hover);
   background: var(--primary-hover);
 }
+
 .secondary-button {
   border: 1px solid var(--primary);
   background: #fff;
   color: var(--primary);
 }
+
 .secondary-button:hover:not(:disabled) {
   background: var(--primary-soft);
 }
+
 .danger-button {
   border: 1px solid var(--danger);
   background: #fff;
   color: var(--danger);
 }
+
 .text-button {
   border: 1px solid transparent;
   background: transparent;
   color: var(--primary);
 }
+
 .primary-button:disabled,
 .secondary-button:disabled,
 .danger-button:disabled,
@@ -264,6 +290,7 @@ a {
   font-weight: 600;
   letter-spacing: 0.04em;
 }
+
 .field-control {
   width: 100%;
   min-height: 44px;
@@ -277,20 +304,24 @@ a {
     border-color 160ms ease,
     box-shadow 160ms ease;
 }
+
 .field-control:focus {
   border-color: var(--primary);
   box-shadow: 0 0 0 3px rgb(36 56 156 / 10%);
 }
+
 textarea.field-control {
   min-height: 120px;
   resize: vertical;
 }
+
 .error-message {
   margin: 12px 0 0;
   color: var(--danger);
   font-size: 12px;
   font-weight: 600;
 }
+
 .empty-state,
 .loading-state {
   padding: 40px 24px;
@@ -302,10 +333,12 @@ textarea.field-control {
   .app-sidebar {
     display: none;
   }
+
   .app-main {
     margin-left: 0;
     padding-bottom: 72px;
   }
+
   .mobile-header {
     position: sticky;
     top: 0;
@@ -319,11 +352,13 @@ textarea.field-control {
     background: rgb(255 255 255 / 96%);
     backdrop-filter: blur(12px);
   }
+
   .mobile-header h1 {
     margin: 0;
     color: var(--primary);
     font-size: 20px;
   }
+
   .mobile-nav {
     position: fixed;
     right: 0;
@@ -337,6 +372,7 @@ textarea.field-control {
     border-top: 1px solid var(--outline);
     background: #fff;
   }
+
   .mobile-nav .nav-link {
     min-width: 64px;
     min-height: 56px;
@@ -347,20 +383,25 @@ textarea.field-control {
     font-size: 10px;
     letter-spacing: 0;
   }
+
   .mobile-nav .nav-link .material-symbols-outlined {
     font-size: 23px;
   }
+
   .page {
     padding: 32px 16px;
   }
+
   .page-heading {
     display: block;
     margin-bottom: 24px;
   }
+
   .page-heading h1 {
     font-size: 28px;
     line-height: 34px;
   }
+
   .page-heading p {
     font-size: 15px;
   }
